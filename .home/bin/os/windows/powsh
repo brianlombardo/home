@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+if [[ "$1" == *'.ps1' ]]; then
+  cat "$1" | powershell
+elif [[ "$1" ]]; then
+  powershell "$@"
+else
+  start powershell
+fi

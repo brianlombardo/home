@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+set -e
+
+
+if [[ "$1" == 'lock' ]]; then lock=true; fi
+osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to true'
+
+function fix_jetbrains {
+  surely try to fix jetbrains by resetting hotkeys
+  rm -vf "$HOME/Library/Preferences/com.apple.symbolichotkeys.plist"
+  rebo
+}
+
+function write_default { echo "$@"; defaults write $@; }
+
+write_default com.apple.Dock showhidden -bool true
+write_default com.apple.Dock autohide -bool false
+write_default com.apple.Dock scroll-to-open -bool true
+write_default com.apple.Dock slow-motion-allowed -bool true
+write_default com.apple.dock mineffect -string scale
+write_default com.apple.dock show-recents -bool false
+write_default com.apple.Dock position-immutable -bool ${lock:-false}
+write_default com.apple.Dock size-immutable -bool ${lock:-false}
+write_default com.apple.Dock contents-immutable -bool ${lock:-false}
+
+write_default com.apple.Finder AppleShowAllFiles true
+write_default com.apple.Finder _FXShowPosixPathInTitle -bool true
+write_default com.apple.Finder QuitMenuItem -bool true
+write_default com.apple.finder FXDefaultSearchScope -string SCcf
+write_default com.apple.finder FXEnableExtensionChangeWarning -bool true
+write_default com.apple.finder CreateDesktop -bool true
+
+# write_default NSGlobalDomain com.apple.mouse.linear -bool true
+# write_default NSGlobalDomain com.apple.mouse.scaling -float 1
+write_default com.apple.AppleMultitouchTrackpad ActuateDetents -bool false
+write_default com.apple.AppleMultitouchTrackpad Clicking -bool true
+write_default com.apple.AppleMultitouchTrackpad DragLock -bool false
+write_default com.apple.AppleMultitouchTrackpad Dragging -bool false
+write_default com.apple.AppleMultitouchTrackpad FirstClickThreshold -int 0
+write_default com.apple.AppleMultitouchTrackpad ForceSuppressed -bool true
+write_default com.apple.AppleMultitouchTrackpad SecondClickThreshold -int 0
+write_default com.apple.AppleMultitouchTrackpad TrackpadCornerSecondaryClick -bool false
+write_default com.apple.AppleMultitouchTrackpad TrackpadFiveFingerPinchGesture -int 0
+write_default com.apple.AppleMultitouchTrackpad TrackpadFourFingerHorizSwipeGesture -int 2
+write_default com.apple.AppleMultitouchTrackpad TrackpadFourFingerPinchGesture -int 0
+write_default com.apple.AppleMultitouchTrackpad TrackpadFourFingerVertSwipeGesture -int 2
+write_default com.apple.AppleMultitouchTrackpad TrackpadHandResting -bool true
+write_default com.apple.AppleMultitouchTrackpad TrackpadHorizScroll -bool true
+write_default com.apple.AppleMultitouchTrackpad TrackpadMomentumScroll -bool true
+write_default com.apple.AppleMultitouchTrackpad TrackpadPinch -bool true
+write_default com.apple.AppleMultitouchTrackpad TrackpadRightClick -bool true
+write_default com.apple.AppleMultitouchTrackpad TrackpadRotate -bool false
+write_default com.apple.AppleMultitouchTrackpad TrackpadScroll -bool true
+write_default com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
+write_default com.apple.AppleMultitouchTrackpad TrackpadThreeFingerHorizSwipeGesture -bool false
+write_default com.apple.AppleMultitouchTrackpad TrackpadThreeFingerTapGesture -bool false
+write_default com.apple.AppleMultitouchTrackpad TrackpadThreeFingerVertSwipeGesture -bool false
+write_default com.apple.AppleMultitouchTrackpad TrackpadTwoFingerDoubleTapGesture -int 0
+write_default com.apple.AppleMultitouchTrackpad TrackpadTwoFingerFromRightEdgeSwipeGesture -int 0
+write_default com.apple.AppleMultitouchTrackpad USBMouseStopsTrackpad -bool false
+write_default com.apple.AppleMultitouchTrackpad UserPreferences -bool true
+
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad DragLock -bool false
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad Dragging -bool false
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadCornerSecondaryClick -bool false
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFiveFingerPinchGesture -int 0
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFourFingerHorizSwipeGesture -int 2
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFourFingerPinchGesture -int 0
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFourFingerVertSwipeGesture -int 2
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadHandResting -bool true
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadHorizScroll -bool true
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadMomentumScroll -bool true
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadPinch -bool true
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRightClick -bool true
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRotate -bool false
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadScroll -bool true
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerDrag -bool true
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerHorizSwipeGesture -int 0
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerTapGesture -int 0
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerVertSwipeGesture -int 0
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadTwoFingerDoubleTapGesture -int 0
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadTwoFingerFromRightEdgeSwipeGesture -int 0
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad USBMouseStopsTrackpad -bool false
+write_default com.apple.driver.AppleBluetoothMultitouch.trackpad UserPreferences -bool true
+
+write_default NSGlobalDomain AppleKeyboardUIMode -int 2 # kb nav
+write_default com.apple.HIToolbox AppleFnUsageType -int 0
+write_default com.apple.HIToolbox AppleEnabledInputSources -array
+write_default NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+write_default NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+write_default NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
+write_default NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+write_default com.apple.keyboard.textinput.inlinePredictive -bool false
+
+# write_default com.apple.WindowManager HideDesktop -int 1
+# write_default com.apple.WindowManager AutoHide -int 1
+
+write_default NSGlobalDomain NSQuitAlwaysKeepsWindow -bool false
+write_default NSGlobalDomain NSCloseAlwaysConfirmsChanges -bool false
+
+# write_default com.apple.Safari ShowFullURLInSmartSearchField -bool true
+# write_default com.apple.Spotlight orderedItems ...
+
+write_default -g ApplePressAndHoldEnabled -bool false
+write_default -g com.apple.swipescrolldirection -bool false
+
+defaults write com.apple.menuextra.clock DateFormat -string '"EEE d MMM HH:mm:ss"'
+
+killall Finder
+killall Dock
+
+surely log out && launchctl bootout user/`id -u $USER`
+
+# sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true
+# sudo nvram StartupMute=%01

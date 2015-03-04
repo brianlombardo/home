@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+set -f
+
+declare -A chars=(
+  ['check']='✓'
+  ['apple']=''
+  ['pow']='⏻'
+  ['zzz']='⏾'
+  ['inf']='∞'
+  ['.']='•'
+  ['|']='│'
+  ['/']='÷'
+  ['-']='−'
+  ['deg']='°'
+  ['?']='¿'
+  ['c']='©'
+  ['r']='®'
+  ['tm']='™'
+  ['<']='‹'
+  ['>']='›'
+  ['<<']='«'
+  ['>>']='»'
+  ['...']='…'
+  ['alpha']='α'
+  ['beta']='β'
+  ['chi']='χ'
+  ['delta']='δ'
+  ['epsilon']='ε'
+  ['eta']='η'
+  ['gamma']='γ'
+  ['iota']='ι'
+  ['kappa']='κ'
+  ['lambda']='λ'
+  ['mu']='μ'
+  ['nu']='ν'
+  ['omega']='ω'
+  ['omicron']='ο'
+  ['phi']='φ'
+  ['pi']='π'
+  ['psi']='ψ'
+  ['rho']='ρ'
+  ['sigma']='σ'
+  ['tau']='τ'
+  ['theta']='θ'
+  ['upsilon']='υ'
+  ['xi']='ξ'
+  ['zeta']='ζ'
+  ['up']='▲'
+  ['down']='▼'
+  ['left']='◄'
+  ['right']='►'
+  ['space']=' '
+)
+
+if [[ "$1" ]]; then
+  charname="`to lowercase $1`"
+  clipit<<<"${chars[$charname]}"
+else
+  for char in "${chars[@]}"; do echo "$char"; done | sort
+fi

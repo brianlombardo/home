@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -e
+
+screen -x housesitter && exit ||:
+
+npm -g list | grep -q express \
+  || npm i -g express ws
+
+screen -m -S housesitter _hs_webserver

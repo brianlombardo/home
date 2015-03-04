@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+if [[ "$1" == 'cron' ]]; then
+  echo -e "*/15 * * * * /usr/local/bin/_hs_beat\n`crontab -l`" \
+    | sort \
+    | uniq \
+    | crontab -
+  crontab -l
+  exit
+fi
+
+function hostinfo { echo `hostname` `/usr/local/bin/_hs_stat`; }
+
+function netinfo {
+  echo `ip a | grep 'inet ' | awk '{print $2}' \
+    | grep -v '^127.0.0.1';curl -s https://api.ipify.org`
+}
+
+function hwinfo {
+  if [[ ! "$1" ]]; then echo `hwinfo print`
+  else
+    if type vcgencmd &>/dev/null; then
+      vcgencmd measure_temp | sed "s/'/°/g;s/=/  /g"
+      vcgencmd get_throttled | sed 's/throttled=/step  /g'
+      vcgencmd measure_volts | sed 's/=/  /g'
+    fi
+    if [[ -d '/sys/class/thermal/thermal_zone0' ]]; then
+      paste \
+        <(cat /sys/class/thermal/thermal_zone*/type) \
+        <(cat /sys/class/thermal/thermal_zone*/temp) \
+        | awk '{print $1"\t"int($2/1000)"°C"}' \
+        | column -s $'\t' -t
+    fi
+  fi
+}
+
+function uptimeinfo {
+  echo -e "`uptime | sed 's/, /\\n/g'`" | head -1 | awk '{$1="";print $0}' | xargs
+}
+
+function printinfo { echo '```'; hostinfo; netinfo; hwinfo; uptimeinfo; echo '```'; }
+
+source /etc/default/housesitter
+/usr/local/bin/_hs_slacker "`printinfo`" "$BEAT_WEBHOOK" "$BEAT_CHANNEL"

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+echo '# open systems interconnection model
+
++ application - end user layer, eg. http, ftp, dns, ssh
++ presentation - syntax/format, eg. encryption, compression
++ session - connection between endpoints, eg. sync and send to ports, sockets
++ transport - proto tcp/udp
++ network - logical/ip address, path/route, packets
++ data link - physical/mac address, frames
++ physical - raw bit stream' | (type bat &>/dev/null && bat --language=markdown || cat )

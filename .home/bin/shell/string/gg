@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -e
+
+regex="$1" args=
+if [[ "$2" ]]; then shift && args="$@"; fi
+grep --color=always -iE "${regex:-'.*'}" $args

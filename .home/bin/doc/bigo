@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+echo '
+Structure	Read Θ	Search Θ	Insert Θ	Delete Θ	Read O	Search O	Insert O	Delete O	Space O
+Array	Θ(1)	Θ(n)	Θ(n)	Θ(n)	O(1)	O(n)	O(n)	O(n)	O(n)
+Stack	Θ(n)	Θ(n)	Θ(1)	Θ(1)	O(n)	O(n)	O(1)	O(1)	O(n)
+Queue	Θ(n)	Θ(n)	Θ(1)	Θ(1)	O(n)	O(n)	O(1)	O(1)	O(n)
+Singly-Linked List	Θ(n)	Θ(n)	Θ(1)	Θ(1)	O(n)	O(n)	O(1)	O(1)	O(n)
+Doubly-Linked List	Θ(n)	Θ(n)	Θ(1)	Θ(1)	O(n)	O(n)	O(1)	O(1)	O(n)
+Skip List	Θ(log(n))	Θ(log(n))	Θ(log(n))	Θ(log(n))	O(n)	O(n)	O(n)	O(n)	O(n log(n))
+Hash Table	N/A	Θ(1)	Θ(1)	Θ(1)	N/A	O(n)	O(n)	O(n)	O(n)
+Binary Search Tree	Θ(log(n))	Θ(log(n))	Θ(log(n))	Θ(log(n))	O(n)	O(n)	O(n)	O(n)	O(n)
+Cartesian Tree	N/A	Θ(log(n))	Θ(log(n))	Θ(log(n))	N/A	O(n)	O(n)	O(n)	O(n)
+B-Tree	Θ(log(n))	Θ(log(n))	Θ(log(n))	Θ(log(n))	O(log(n))	O(log(n))	O(log(n))	O(log(n))	O(n)
+Red-Black Tree	Θ(log(n))	Θ(log(n))	Θ(log(n))	Θ(log(n))	O(log(n))	O(log(n))	O(log(n))	O(log(n))	O(n)
+Splay Tree	N/A	Θ(log(n))	Θ(log(n))	Θ(log(n))	N/A	O(log(n))	O(log(n))	O(log(n))	O(n)
+AVL Tree	Θ(log(n))	Θ(log(n))	Θ(log(n))	Θ(log(n))	O(log(n))	O(log(n))	O(log(n))	O(log(n))	O(n)
+KD Tree	Θ(log(n))	Θ(log(n))	Θ(log(n))	Θ(log(n))	O(n)	O(n)	O(n)	O(n)	O(n)' \
+| column -s $'\t' -t
+echo
+echo '
+Algorithm	Best Ω	Avg Θ	Worst O	Space O
+Quicksort	Ω(n log(n))	Θ(n log(n))	O(n^2)	O(log(n))
+Mergesort	Ω(n log(n))	Θ(n log(n))	O(n log(n))	O(n)
+Timsort	Ω(n)	Θ(n log(n))	O(n log(n))	O(n)
+Heapsort	Ω(n log(n))	Θ(n log(n))	O(n log(n))	O(1)
+Bubble Sort	Ω(n)	Θ(n^2)	O(n^2)	O(1)
+Insertion Sort	Ω(n)	Θ(n^2)	O(n^2)	O(1)
+Selection Sort	Ω(n^2)	Θ(n^2)	O(n^2)	O(1)
+TreeSort	Ω(n log(n))	Θ(n log(n))	O(n^2)	O(n)
+ShellSort	Ω(n log(n))	Θ(n(log(n))^2)	O(n(log(n))^2)	O(1)
+BucketSort	Ω(n+k)	Θ(n+k)	O(n^2)	O(n)
+RadixSort	Ω(nk)	Θ(nk)	O(nk)	O(n+k)
+CountingSort	Ω(n+k)	Θ(n+k)	O(n+k)	O(k)
+Cubesort	Ω(n)	Θ(n log(n))	O(n log(n))	O(n)
+' | column -s $'\t' -t
+echo
+echo '
+Pattern	Example	Recurrence	Time Complexity
+Linear Recursion	Factorial	T(n) = T(n - 1) + O(1)	O(n)
+Binary Recursion	Fibonacci (naive)	T(n) = T(n - 1) + T(n - 2) + O(1)	O(2ⁿ)
+Divide and Conquer	Merge Sort	T(n) = 2T(n/2) + O(n)	O(n log n)
+Tree Recursion	Towers of Hanoi	T(n) = 2T(n - 1) + O(1)	O(2ⁿ)
+Multiple Recursions	Some backtracking	T(n) = kT(n - 1) + O(1)	O(kⁿ)
+' | column -s $'\t' -t

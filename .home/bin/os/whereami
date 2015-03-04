@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set  -e
+
+if [[ "$1" ]]; then
+  while [[ "$1" ]]; do
+    if [[ "$whereami" ==  *"$1"* ]]; then exit
+    else shift; fi
+  done
+  exit 1
+else
+  echo "$whereami"
+fi

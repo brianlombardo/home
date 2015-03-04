@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -e
+
+if [[ "$1" == 'init' ]]; then
+  for editor in Code Cursor; do
+    while read confdir; do
+      if [[ -d "$confdir" ]]; then
+        cp -v "$DOTHOME/conf/code/"*.json "$confdir"
+      fi
+    done <<< "$HOME/.config/$editor - OSS/User
+              $HOME/.config/$editor/User
+              $APPDATA/$editor/User
+              $HOMELIB/Application Support/$editor/User"
+  done
+elif type "$edi" &>/dev/null; then $edi $@
+elif type code &>/dev/null; then code $@
+elif type code-oss &>/dev/null; then code-oss $@
+elif type cursor &>/dev/null; then cursor $@
+elif type vim &>/dev/null; then vim $@; fi

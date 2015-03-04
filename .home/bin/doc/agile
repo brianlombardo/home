@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+echo '# agile
+
++ individuals and interactions over processes and tools
++ working software over comprehensive documentation
++ customer collaboration over contract negotiation
++ responding to change over following a plan
+
++ our highest priority is to satisfy the customer through the early and continuous delivery of valuable software
++ welcome changing requirements, even late in development
+  + agile processes harness change for the customer’s competitive advantage
++ deliver working software frequently, from a couple of weeks to a couple of months, with a preference to the shorter timescale
++ business people and developers must work together daily throughout the project
++ build projects around motivated individuals
+  + give them the environment and support they need, and trust them to get the job done
++ the most efficient and effective method of conveying information to and within a development team is face-to-face conversation
++ working software is the primary measure of progress
++ agile processes promote sustainable development
+  + the sponsors, developers, and users should be able to maintain a constant pace indefinitely
++ continuous attention to technical excellence and good design enhances agility
++ simplicity–the art of maximizing the amount of work not done–is essential
++ the best architectures, requirements, and designs emerge from self-organizing teams
++ at regular intervals, the team reflects on how to become more effective, then tunes and adjusts its behavior accordingly' \
+  | (type bat &>/dev/null && bat --language=markdown || cat )
