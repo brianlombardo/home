@@ -1,0 +1,64 @@
+#!/usr/bin/env node
+
+const header = '<html lang=""><head><style>html{background:#000;}a{color:#ccc;}span{color:#888}a:hover{color:#fff}body{padding:4em;font-size:4em;text-align:center;background:#000;color:#bbb;font-family:"Courier New", Courier, monospace}</style><title>housesitter</title></head><body>'
+const button = '<br /><a href="/action" class="button"><h1>toggle</h1></a>'
+const message = '<span class="button"><h1>ok, brb</h1></span>'
+const footer = '</body></html>'
+const script = '<script>window.onload = function() { window.location.replace("/toggle"); }</script>'
+
+const app = require('express')()
+const exec = require('child_process').exec
+let lock = false
+
+app.get('/', function (req, res) {
+  exec("housesitter stat", function (error, stdout, stderr) {
+    if (stdout) {
+      console.log(stdout)
+      const body = stdout.includes('running') ? stdout.includes('silently')
+          ? 'silently armed!' : 'armed!' : 'sleeping.'
+
+      res.send(getPage(`${body}${button}`))
+    } else {
+      const err = `ERROR: ${stderr}`
+      console.log(err)
+      res.send(getPage(`${err}${button}`))
+    }
+  })
+})
+
+app.get('/toggle', function (req, res) {
+  execCommand(res, "housesitter toggle")
+})
+
+app.get('/stop', function (req, res) {
+  execCommand(res, "housesitter stop")
+})
+
+app.get('/silent', function (req, res) {
+  execCommand(res, "housesitter silent")
+})
+
+app.get('/action', function (req, res) {
+  res.send(`${getPage(message)}${script}`)
+})
+
+function getPage(body) {
+  return `${header}${body}${footer}`
+}
+
+function execCommand(res, command) {
+  if (!lock) {
+    lock = true
+    exec(command, function () {
+      lock = false
+      res.redirect('/')
+    })
+  } else {
+    console.log('more than one command, ignoring')
+  }
+}
+
+app.listen(4321, function () {
+  console.log('listening on port 4321')
+})
+
