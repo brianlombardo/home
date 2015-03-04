@@ -1,0 +1,44 @@
+function pro { [[ "$workspace" ]] || local workspace="$PROJECTS"
+  mkdir -p "$workspace" && cd "$workspace" || return 1
+  if [[ "$1" == 'clone' && "$2" ]]; then local repo="$2"; shift 2
+    git clone "$repo" $@ || return 1; repo="${repo##*/}"; repo="${repo//.git/}"
+    [[ -d "$repo" ]] && cd "$repo"
+  else local target="`find . -maxdepth 2 -type d -not -path '*/.*' \
+       | grep -E "${1//\//.*/}" | head -1`"
+    if [[ ! -d "$target" ]]; then echo "$1 not found."; return 1; fi
+    cd "$target"; [[ "$2" ]] && shift && $@ .
+  fi
+}; alias prolib='workspace="$DOTHOME/projects" pro'
+
+function adbdev {
+  if [[ "$1" ]]; then local device="`adbb ls | grep -iE "$1" | head -1`"
+    if [[ "$device" ]]; then export ANDROID_SERIAL="$device"
+    else echo "no matching device: $1"; fi
+  fi
+  echo "ANDROID_SERIAL=$ANDROID_SERIAL"
+}
+
+alias gs='git status' gsa='gs --ignored'
+alias gp='git push origin HEAD -u' gup='git pull --rebase'
+alias binsymbols='nm -gDC'
+
+alias rustupup="curl --proto '=https' --tlsv1.2 -sSf 'https://sh.rustup.rs' | sh;"
+alias sdkmanup='curl -s "https://get.sdkman.io" | bash;'
+alias nvmup='curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash;'
+
+alias rad='./gradlew'
+alias eclipsebuild='java -jar $ECLIPSE/plugins/org.eclipse.equinox.launcher_*.jar -noSplash -data "${WORKSPACE:-.}" -application org.eclipse.jdt.apt.core.aptBuild'
+alias fastbroot='sudo "$ANDROID_HOME/platform-tools/fastboot"'
+
+alias flutterup='surely "install flutter ${flutter_version:-stable}" && cd && \
+  rm -fr .pub-cache .flutter .flutter-devtools .dart .dartServer "$HOMELIB/flutter" && \
+  cd "$HOMELIB" && git clone https://github.com/flutter/flutter.git && cd flutter && \
+  git checkout "${flutter_version:-stable}" && bin/flutter doctor'
+alias fpg='flutter pub get;'
+alias fpup='flutter pub upgrade;'
+alias ftest='flutter test;'
+
+alias virtinit='pkg i virt-manager && sudo usermod -aG libvirt $USER'
+
+alias agile="echo -e '\n+ individuals and interactions over processes and tools\n+ working software over comprehensive documentation\n+ customer collaboration over contract negotiation\n+ responding to change over following a plan\n';"
+alias osi="echo '# open systems interconnection model\n\n+ application - end user layer, eg. http, ftp, dns, ssh\n+ presentation - syntax/format layer, eg. encryption, compression\n+ session - connection between endpoints, sockets, sync and send to ports\n+ transport - proto tcp/udp\n+ network - logical/ip address, path/route, packets\n+ data link - physical/mac address, frames\n+ physical - raw bit stream\n';"
