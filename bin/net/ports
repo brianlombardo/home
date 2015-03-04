@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+port="$1"; sudo lsof -i -P | grep -iE ":${port}.*listen"

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -e
+
+conf="$HOME/.xmodmaprc"
+if [[ ! -f "$conf" ]]; then
+  echo 'remove mod4 = Super_L
+add control = Super_L' > "$conf"
+fi
+sleep 3
+xmodmap "$conf"

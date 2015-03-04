@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+set -e
+
+if [[ ! "$1" ]]; then echo 'pass a remote url'; exit; fi
+
+function _git_ {
+  echo -e "\e[0;\e[36m> git $@\e[0m"
+  git $@
+}
+
+function _file_change_ {
+  echo -e "\e[0;\e[36m> echo $@ >> $file\e[0m"
+  echo $@ >> $file
+}
+
+dir='repo_user'
+cd
+rm -fr ${dir}1  ${dir}2
+_git_ clone "$1" ${dir}1
+_git_ clone "$1" ${dir}2
+
+file="SOME_FILE_`date +%s`"
+
+echo -e '\e[0;\e[35m# USER 1 adds file\e[0m'
+cd ${dir}1
+_git_ rev-parse HEAD
+_file_change_ 'hello'
+_git_ add -A
+_git_ commit -m "$file-created"
+_git_ push origin HEAD -u
+_git_ rev-parse HEAD
+
+echo -e '\e[0;\e[35m# USER 2 changes file\e[0m'
+cd ../${dir}2
+_git_ rev-parse HEAD
+_git_ pull
+_git_ rev-parse HEAD
+_file_change_ world
+_git_ add -A
+_git_ commit -m "${file}-updated-after-pull"
+_git_ push origin HEAD -u
+_git_ rev-parse HEAD
+
+echo -e '\e[0;\e[35m# USER 1 changes file without updating\e[0m'
+cd ../${dir}1
+_file_change_ 'mars'
+_git_ add -A
+_git_ commit -m "$file-updated-without-pulling"
+_git_ push origin HEAD --force-with-lease --force-if-includes -u \
+  || echo -e '\e[0;\e[35m--force-with-lease fails when we have not fetched.\n\nfetching... \e[0m'
+_git_ fetch
+_git_ status
+echo -e '\e[0;\e[35mnote: --force-with-lease alone will work now that git knows we have diverged, and will clobber the remote file!\e[0m'
+_git_ push origin HEAD --force-with-lease --force-if-includes \
+  || echo -e '\e[0;\e[35m--force-with-lease --force-if-includes fails because we are attempting to clobber a file with remote changes\e[0m'
+
+cd
+rm -fr ${dir}1  ${dir}2

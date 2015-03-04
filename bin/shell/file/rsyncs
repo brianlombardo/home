@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+if [[ ! "$2" ]]; then echo 'usage: rsyncs /path/to/source /path/to/dest'
+else
+  while [[ "$2" ]]; do
+    source="$1" dest="$2" args='-av --progress --checksum --ignore-errors'
+    if [[ "$port" ]]; then
+      rsync -e "ssh -p $port" $args "$source/." "$dest"
+    else # args+=" --exclude '$1' "
+      rsync $args "$source/." "$dest"
+    fi
+    shift 2
+  done
+fi

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+_hs_$@
