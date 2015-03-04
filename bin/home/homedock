@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -e
+
+cd "`dirname "$0"`/../.."
+
+if [[ "$1" =~ ^b(uild)?$ ]]; then
+  docker build -t trnqilo .
+else
+  docker run \
+    -v "$HOME/.home:/home/trnqilo/.home:ro" \
+    -v "$HOME/.ssh:/home/trnqilo/.ssh:ro" \
+    -it trnqilo
+fi
