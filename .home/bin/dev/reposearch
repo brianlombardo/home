@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -e
+
+search="$1"
+working_dir="${PROJECTS:-`pwd`}"
+
+if [[ "$2" ]]; then shift
+  repos="$@"
+elif [[ ! "$repos" ]]; then
+  cd "$working_dir"
+  repos="`find . -mindepth 1 -maxdepth 1 -type d | sed 's/.\///g'`"
+fi
+
+function find_matches {
+  echo "# $project"
+  cd "$working_dir/$project" \
+    && git log --all --graph --decorate --oneline \
+      | grep "$search" \
+    ||:
+}
+
+for project in $repos; do find_matches; done

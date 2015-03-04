@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -e
+
+quiet='/dev/shm/hsquiet'
+
+if [[ "$1" == 'enable' ]]; then
+  touch "$quiet"
+elif [[  "$1" == 'disable' ]]; then
+  rm -f "$quiet"
+else
+  [[ -f "$quiet" ]] || exit 1
+fi

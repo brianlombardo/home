@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -e
+
+if pidof motion &>/dev/null; then
+  echo 'already armed'; exit
+fi
+
+sudo rm -f /dev/shm/motion.log
+source /etc/default/housesitter
+if [[ "$USE_SYSTEMD" != true ]]; then
+  sudo motion -b -c /etc/motion/motion.conf &>/dev/null
+else
+  sudo systemctl unmask motion
+  sudo systemctl enable motion
+  sudo systemctl start motion
+fi
+
+/usr/local/bin/_hs_message 'ARMED'
