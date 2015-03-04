@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -e
+
+if [[ ! "$1" ]]; then echo 'usage: bbcon save|apply|xrdp'; exit; fi
+
+function _bbcon_apply { cp "$DOTHOME/conf/bbcon/.blackbox"* > "$HOME"; }
+
+function _bbcon_save {	cp "$HOME/.blackbox"* "$DOTHOME/conf/bbcon"; }
+
+function _bbcon_xrdp { echo 'blackbox-session' > "$HOME/.xsession"; }
+
+_bbcon_$1

@@ -1,0 +1,7 @@
+alias up='if type homeup &>/dev/null; then homeup; else homesync; fi;'
+alias home='edi "$DOTHOME";'
+alias holo='mkdir -p "$HOLO" && edi "$HOLO";'
+alias lopro='mkdir -p "$HOME/.local" && edi "$HOME/.local/profile";'
+alias ssh-keygen-ed25519='ssh-keygen -t ed25519'
+alias ssh-regen='ssh-keygen -y -f'
+alias passgen='openssl passwd -1'

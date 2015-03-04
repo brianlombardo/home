@@ -1,0 +1,160 @@
+#!/usr/bin/env bash
+set -e
+
+hostname="`hostname`"
+chatty_file='/etc/motion/CHATTY'
+silent_file='/etc/motion/SILENT'
+
+function _housesitter_install { cd
+  pkg i motion curl git
+  git clone 'https://github.com/andreafabrizi/dropbox-uploader'
+  mkdir -p "$HOME/.local/profiles"
+  echo -e "HS_CHANNEL=''\nHS_WEBHOOK=''" > "$HOME/.local/profiles/housesitter"
+  _motionconf
+}
+
+function _housesitter_start {
+  sudo systemctl unmask motion
+  sudo systemctl enable motion
+  sudo systemctl start motion
+  echo 'housesitter started'
+  __slacker "$hostname ARMED"
+}
+
+function _housesitter_stop {
+  sudo systemctl stop motion
+  sudo systemctl disable motion
+  sudo systemctl mask motion
+  echo 'housesitter stopped'
+  __slacker "$hostname sleeping"
+}
+
+function _housesitter_restart { _housesitter_stop; sleep 5; _housesitter_start; }
+
+function _housesitter_toggle {
+  _housesitter_reset
+  if pidof motion; then
+    _housesitter_stop
+  else
+    _housesitter_start
+  fi
+}
+
+function _housesitter_stat {
+  if pidof motion; then silently=''
+    if __is_silent; then silently='silently'; fi
+    echo 'housesitter is running' "$silently"
+  else
+    echo 'housesitter is stopped'
+  fi
+}
+
+function _housesitter_beat { # */15 * * * * housesitter beat
+  local whatsmyip="`host myip.opendns.com resolver1.opendns.com \
+    | grep "myip.opendns.com has" \
+    | $awk '{print $4}'`"
+  chatty=true __slacker "$hostname@$whatsmyip"
+}
+
+function _housesitter_trip { __slacker "$hostname TRIPPED"; }
+
+function _housesitter_cap {
+  __handle_capture "$@"
+  local hour="`date +%H`"
+  if (( hour < 7 )) || (( hour > 19 )); then
+    __slacker "$hostname CAPTURED"
+  fi
+}
+
+function _housesitter_zzz { __slacker "$hostname ZZZ"; }
+
+function _housesitter_reset {
+  if __is_silent; then
+    sudo mv "$silent_file" "$chatty_file"
+  else
+    sudo touch "$chatty_file"
+  fi
+}
+
+function _housesitter_silent {
+  if __is_chatty; then
+    sudo mv "$chatty_file" "$silent_file"
+  else
+    sudo touch "$silent_file"
+  fi
+  _housesitter_restart
+  echo 'silently armed'
+}
+
+function _housesitter_web {
+  if ! screen -x hswebscreen; then
+    npm i -g express
+    screen -m -S hswebscreen housesitter-web
+  fi
+}
+
+function __handle_capture {
+  if [[ "$HS_DROPBOX" ]]; then
+    local file="$@" content_dir="`date +"%m-%d-%y"`_$hostname"
+    if __is_silent; then content_dir="silentsitter/$content_dir"; fi
+    if dropbox_uploader -f "$HS_DROPBOX" upload "$file" "/$content_dir/"; then
+      rm "$file"
+    fi
+  fi
+}
+
+function __slacker {
+  if [[ "$chatty" ]] || __is_chatty || ! __is_silent; then
+    if [[ "$1" && "$HS_CHANNEL" && "$HS_WEBHOOK" ]]; then
+      curl -X POST --data-urlencode "payload={\"channel\": \"#$HS_CHANNEL\", \"username\": \"webhookbot\", \"text\": \"$@\", \"icon_emoji\": \":ghost:\"}" "https://hooks.slack.com/services/$HS_WEBHOOK" ||:
+    fi
+  fi
+}
+
+function __is_silent { [[ -f "$silent_file" ]]; }
+
+function __is_chatty { [[ -f "$chatty_file" ]]; }
+
+function _motionconf {
+  motion_home="$HOME/.motion"; mkdir -p "$motion_home" "$HOME/Pictures/motion"
+  housesitter="$DOTHOME/lib/housesitter/housesitter"
+  echo "
+daemon on
+setup_mode off
+log_file $motion_home/motion.log
+log_level 1
+target_dir $HOME/Pictures/motion
+videodevice /dev/video0
+width 1280
+height 720
+framerate 30
+text_left HS
+text_right %Y-%m-%d\n%T-%q
+emulate_motion off
+threshold 1500
+noise_level 0
+despeckle_filter EedDl
+minimum_motion_frames 1
+event_gap 60
+pre_capture 3
+post_capture 0
+picture_output off
+picture_filename %Y%m%d%H%M%S-%q
+movie_output on
+movie_max_time 60
+movie_quality 0
+movie_codec mkv
+movie_filename %t-%v-%Y%m%d%H%M%S
+webcontrol_port 4321
+webcontrol_localhost on
+webcontrol_parms 0
+stream_port 3333
+stream_localhost off
+on_event_start $housesitter trip
+on_event_end $housesitter zzz
+on_picture_save $housesitter cap %f
+on_movie_end value $housesitter cap %f
+" > "$motion_home/motion.conf"
+}
+
+_housesitter_$@
