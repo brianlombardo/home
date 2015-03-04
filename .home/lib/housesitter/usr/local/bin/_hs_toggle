@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+if pidof motion &>/dev/null; then
+  /usr/local/bin/_hs_stop
+else
+  /usr/local/bin/_hs_start
+fi

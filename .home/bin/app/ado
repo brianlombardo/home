@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -e
+
+if [[ ! "$ADO_BOARD" ]]; then
+  echo 'ADO_BOARD not set
+export ADO_BOARD="COMPANY/PROJECT/_boards/board/t/BOARD_NAME/Stories"'; exit
+fi
+
+ado_url="https://dev.azure.com"
+
+if [[ "$1" == '.' ]] && git remote -v &>/dev/null; then
+  proj=`git remote -v | head -1 | awk '{print $2}'`
+  proj="${proj##*/}"
+  board="${ADO_BOARD#*/}"
+  board="${ADO_BOARD%%/${board#*/}}"
+  open "$ado_url/$board/_git/$proj"
+elif [[ "$1" ]]; then
+  while [[ "$1" ]]; do
+    open "$ado_url/$ADO_BOARD?workitem=$1"; shift
+  done
+else
+  open "$ado_url/$ADO_BOARD"
+fi
