@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -e
+
+if [[ "$1" ]]; then quietly "sleep $1"; fi
+
+if [[ "$whereami" == 'darwin' ]]; then
+    pmset displaysleepnow
+elif [[ "$whereami" == 'windows' ]]; then
+    scrnsave.scr -s
+elif [[ "$whereami" == 'android' ]]; then
+    input keyevent 26
+fi
