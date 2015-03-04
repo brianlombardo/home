@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+VBoxManage clonehd $1 $2 --format RAW
+

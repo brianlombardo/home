@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -e
+
+function parse_input {
+  for (( i = 0; i < ${#input}; ++i )); do
+    character="${input:$i:1}" $1
+  done
+}
+
+function as_units {
+  if [[ ! "$right" ]] && [[ "$character" =~ [0-9]|'.'|','|'$' ]]; then
+    left=true
+  elif [[ "$left" ]]; then units="$units$character"
+    right=true
+  fi
+}
+
+function as_value {
+  if [[ "$character" =~ [0-9]|'.'|'-' ]]; then
+    number="$number$character"
+  fi
+}
+
+[[ "$1" == 'unit' ]] && print_units=true && shift
+input="$@"
+
+parse_input as_units
+if [[ "$print_units" ]]; then 
+  echo "$units"
+else
+  input="${input//"$units"/}"
+  parse_input as_value
+
+  [[ "$number" ]] && echo "$number"
+fi
