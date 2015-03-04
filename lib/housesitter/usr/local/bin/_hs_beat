@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+if [[ "$1" == 'cron' ]]; then
+  crontab - <<<'*/15 * * * * /usr/local/bin/_hs_beat'; crontab -l; exit
+fi
+
+function hostinfo { echo `hostname` `/usr/local/bin/_hs_stat`; }
+
+function netinfo {
+  echo `ip a | grep 'inet ' | awk '{print $2}' | grep -v '^127\.0\.0\.1';curl -s https://api.ipify.org`
+}
+
+function hwinfo {
+  echo `if type vcgencmd &>/dev/null; then
+    vcgencmd measure_temp | sed "s/'/°/g"
+    vcgencmd get_throttled
+    vcgencmd measure_volts
+  fi
+  if [[ -d '/sys/class/thermal/thermal_zone0' ]]; then
+    paste \
+      <(cat /sys/class/thermal/thermal_zone*/type) \
+      <(cat /sys/class/thermal/thermal_zone*/temp) \
+      | awk '{print $1"\t"int($2/1000)"°C"}' \
+      | column -s $'\t' -t
+  fi`
+}
+
+function printinfo { echo '```'; hostinfo; netinfo; hwinfo; echo '```'; }
+
+source /etc/default/housesitter
+/usr/local/bin/_hs_slacker "`printinfo`" "$BEAT_WEBHOOK" "$BEAT_CHANNEL"

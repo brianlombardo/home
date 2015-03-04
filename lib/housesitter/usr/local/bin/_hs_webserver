@@ -1,0 +1,44 @@
+#!/usr/bin/env node
+
+const shell = require("child_process").exec;
+const ws = require('ws');
+const app = require("express")();
+const header =
+  '<html><head><style>html{background:#000;}a{color:#ccc;}span{color:#888}a:hover{color:#fff}body{padding:4em;font-size:4em;text-align:center;background:#000;color:#bbb;font-family:"Courier New", Courier, monospace}</style></head><body>';
+const button = '<br /><a href="/action" class="button"><h1>toggle</h1></a>';
+const message = '<span class="button"><h1>ok, brb</h1></span>';
+const footer = "</body></html>";
+const script =
+  "<script>window.onload = function() { window.location.replace('/toggle'); }</script>";
+const buildPage = (body) => `${header}${body}${footer}`;
+let lock = false;
+
+app.get("/", (req, res) => {
+  shell("_hs_stat", (error, stdout, stderr) => {
+    const body = stdout ? stdout : `ERROR: ${stderr}`;
+    console.log(body);
+    res.send(buildPage(`${body}${button}`));
+  });
+});
+
+app.get("/action", (req, res) => {
+  res.send(`${buildPage(message)}${script}`);
+});
+
+for (const command of ["start", "stop", "toggle"]) {
+  app.get(`/${command}`, (req, res) => {
+    if (!lock) {
+      lock = true;
+      shell(`_hs_${command}`, (error, stdout, stderr) => {
+        lock = false;
+        res.redirect("/");
+      });
+    } else {
+      console.log(`more than one ${command} request, ignoring`);
+    }
+  });
+}
+
+app.listen(3000, () => {
+  console.log("listening on port 3000");
+});
