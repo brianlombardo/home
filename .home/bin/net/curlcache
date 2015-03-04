@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -e
+
+function url_to_path {
+  url="$1"; url="${url#*/}"; url="${url%%[?#]*}"; url="${url#*/}"
+  echo "$url"
+}
+
+curl_cache="${CURLCACHE_DIR:-$HOME/.curlcache}"
+cache_file=`md5sum <<< "$@" | $awk '{print $1}'`
+
+url="$1"
+if [[ "$url" != *'://'* ]]; then url="https://$url"; fi
+shift && args="$@" || args=
+
+cache_dir="$curl_cache/`url_to_path "$url"`"
+cache_file="$cache_dir/$cache_file"
+
+if [[ "$clobber" == true || ! -f "$cache_file" ]]; then
+  mkdir -p "$cache_dir"
+  curl_result="`curl -s $args $url ||:`"
+
+  if [[ "$curl_result" ]]; then
+    echo "# $url $args
+$curl_result" > "$cache_file"
+  else
+    find "$curl_cache" -type d -empty -delete
+    >&2 echo "failed to fetch $url"
+    exit 1
+  fi
+fi
+
+tail -n+2 "$cache_file"

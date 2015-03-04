@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+output="`cat`"
+if whereami darwin; then pbcopy<<<"$output"
+elif whereami windows; then clip<<<"$output"
+elif whereami linux bsd && type xclip &>/dev/null; then
+  xclip<<<"$output"
+fi
+echo "$output"
