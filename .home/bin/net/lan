@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -e
+
+# if whereami darwin bsd; then
+#   URL="`netstat -nr | grep 'default.*192' | $awk '{print $2}' ||:`"
+# elif whereami windows; then
+#   URL="`ipconfig.exe | grep Gateway | $awk '{print $13}' ||:`"
+# else
+  # URL="`ip route show | grep -i 'default via' | $awk '{print $3 }' ||:`"
+# fi
+
+if whereami linux; then
+  if pingonce `hostname -I | $awk '{print $1}'`; then :
+  else
+    echo 'disconnected'; exit 1
+  fi
+fi

@@ -1,0 +1,35 @@
+#!/usr/bin/env node
+
+require('child_process').execSync('npm i -g express body-parser') // node-fetch
+const express = require('express')().use(require('body-parser').json())
+const port = process.env.port ?? 8080
+const destination = process.env.destination ?? 'http://localhost'
+
+function log(statusCode, req) {
+  console.log(`${new Date().toLocaleTimeString()} ${statusCode} ${req.method} ${req.originalUrl}`)
+}
+
+express.all("/*", async (req, res) => {
+  try {
+    const response = await fetch(`${destination}${req.originalUrl}`, {
+      method: req.method,
+      headers: {
+        ...req.headers,
+        host: new URL(destination).host,
+      },
+      body: req.method.toLowerCase() === "get" ? null : JSON.stringify(req.body),
+    })
+
+    const data = await response.text()
+    const status=response.status
+    res.status(status).send(data)
+    log(status, req);
+  } catch (error) {
+    res.status(500).json({error: "forwarding failure", details: error.message})
+    log(500, req);
+  }
+})
+
+express.listen(port, () => {
+  console.log(`listening on ${port}, forwarding to ${destination}`)
+})
