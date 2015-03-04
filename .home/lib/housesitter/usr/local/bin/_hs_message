@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -e
+
+message="$@"
+echo "$message"
+if _hs_quiet; then exit; fi
+
+source /etc/default/housesitter
+
+if [[ "$message" == 'TRIPPED' && "$TRIP_MESSAGE" ]]; then
+  message+=" $TRIP_MESSAGE"
+fi
+
+/usr/local/bin/_hs_slacker \
+  "`hostname` $message" \
+  "$MESSAGE_WEBHOOK" \
+  "$MESSAGE_CHANNEL"
