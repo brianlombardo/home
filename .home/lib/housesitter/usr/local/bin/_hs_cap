@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -e
+
+source /etc/default/housesitter
+hour=`date +%H`
+# if ((hour >= CAP_ALERT_START && hour <= CAP_ALERT_END));then
+if [[ "$CAP_ALERT" == true ]] || [[ "$hour" -lt 7 ]] || [[ "$hour" -gt 19 ]]; then
+  /usr/local/bin/_hs_message 'MOVEMENT'
+fi
+
+dir=`date +"%m-%d-%y"`_`hostname`
+if _hs_quiet; then dir="silentsitter/$dir"; fi
+
+/usr/local/bin/_hs_dbu -f /etc/default/housesitter upload "$1" "/$dir/" ||:
+
+rm "$1"

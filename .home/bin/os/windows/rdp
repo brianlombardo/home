@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+mstsc $( [[ "$1" ]] && echo -v:$1 || :) &

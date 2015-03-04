@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+size_gb="${1:-1}"
+location="${2:-.}"
+
+dd if=/dev/zero of="$location/.disktest" bs=1M count="$(( size_gb * 1024 ))" status=progress ||:
+
+rm -f "$location/.disktest"

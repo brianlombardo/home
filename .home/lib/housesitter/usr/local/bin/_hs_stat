@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+if _hs_quiet; then printf 'quietly '; fi
+
+if pidof motion &>/dev/null; then
+  echo 'armed'
+else
+  echo 'sleeping'
+fi
