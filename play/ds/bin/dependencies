@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -e
+
+if whereami linux; then
+  sudo dpkg --add-architecture i386
+  sudo add-apt-repository multiverse
+  sudo apt update
+  sudo apt dist-upgrade
+  sudo apt install \
+    steamcmd build-essential curl screen unzip gdb \
+    libbz2-1.0 lib32stdc++6 libcurl3-gnutls libc++-dev \
+    libstdc++6:i386 libssl3 libstdc++6:i386 libcurl3-gnutls:i386 \
+    lib32gcc-s1 lib32z1 lib32ncurses6
+else
+  mkdir "$HOME/.steamcmd" && cd "$HOME/.steamcmd"
+  if whereami windows; then steamcmd='steamcmd.zip' deflate='zip'
+  elif whereami darwin; then steamcmd='steamcmd_osx.tar.gz' deflate='tar zxvf'
+  else steamcmd='steamcmd_linux.tar.gz' deflate='tar zxvf'; fi
+  curl -sqL "https://steamcdn-a.akamaihd.net/client/installer/$steamcmd" | $deflate -
+fi

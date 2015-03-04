@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -e
+
+if ! pidof motion &>/dev/null; then
+  echo 'already sleeping'; exit
+fi
+
+source /etc/default/housesitter
+if [[ "$USE_SYSTEMD" != true ]]; then
+  pidof motion | if read pids; then sudo kill -15 $pids; fi
+  sleep 3
+  pidof motion | if read pids; then sudo kill -9 $pids; fi
+else
+  sudo systemctl stop motion
+  sudo systemctl disable motion
+  sudo systemctl mask motion
+fi
+
+/usr/local/bin/_hs_message 'sleeping'
