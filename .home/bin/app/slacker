@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -e
+
+[[ "$1" ]] && slack_channel="$1" && shift
+[[ "$1" ]] && slack_webhook="$1" && shift
+[[ "$1" ]] && slack_message="$@"
+
+[[ "$slack_channel" ]] && [[ "$slack_webhook" ]] && [[ "$slack_message" ]] &&\
+  curl -X POST --data-urlencode "payload={\"channel\": \"#$slack_channel\", \"username\": \"webhookbot\", \"text\": \"$slack_message\", \"icon_emoji\": \":ghost:\"}"\
+    https://hooks.slack.com/services/$slack_webhook
