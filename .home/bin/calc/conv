@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+set -e
+
+basevalue="`value $1`"
+baseunit="`unit $1`"
+[[ "$2" == 'to' ]] && shift
+targetunit="$2"
+[[ "$targetunit" == "$baseunit" ]] && echo "$basevalue$baseunit" && exit
+
+function mi_to_km { clac "$basevalue x 1.60934"; }
+
+function mi_to_ft { clac "$basevalue x 5280"; }
+
+function km_to_mi { clac "$basevalue x 0.621371"; }
+
+function km_to_m { clac "$basevalue x 1000"; }
+
+function m_to_km { clac "$basevalue / 1000"; }
+
+function m_to_yd { clac "$basevalue x 1.094"; }
+
+function m_to_ft { clac "$basevalue x 3.28084"; }
+
+function m_to_cm { clac "$basevalue x 100"; }
+
+function m_to_mm { clac "$basevalue x 1000"; }
+
+function yd_to_m { clac "$basevalue x 0.9144"; }
+
+function yd_to_ft { clac "$basevalue x 3"; }
+
+function yd_to_in { clac "$basevalue x 36"; }
+
+function ft_to_mi { clac "$basevalue / 5280"; }
+
+function ft_to_m { clac "$basevalue x 0.3048"; }
+
+function ft_to_yd { clac "$basevalue / 3"; }
+
+function in_to_cm { clac "$basevalue x 2.54"; }
+
+function in_to_mm { clac "$basevalue x 25.4"; }
+
+function cm_to_in { clac "$basevalue x 0.393701"; }
+
+function mm_to_in { clac "$basevalue / 25.4"; }
+
+function mm_to_cm { clac "$basevalue / 10"; }
+
+function c_to_f { clac "($basevalue x 1.8) + 32"; }
+
+function c_to_k { clac "$basevalue + 273.15"; }
+
+function f_to_c { clac "($basevalue - 32) / 1.8"; }
+
+function f_to_k { clac "($basevalue + 459.67) / 1.8"; }
+
+function k_to_c { clac "$basevalue - 273.15"; }
+
+function k_to_f { clac "($basevalue - 273.15) x (9/5) + 32"; }
+
+function deg_to_pi { [[ "$basevalue" != '180' ]] && clac "$basevalue / 180" || echo ''; }
+
+function deg_to_rad { clac "($1 / 180) x pi"; }
+
+function pi_to_deg { clac "$1 x 57.29578 x pi"; }
+
+function rad_to_deg { clac "$1 x 57.29578"; }
+
+function min_to_hr { clac "$1 / 60"; }
+
+function hr_to_min { clac "$1 x 60"; }
+
+function l_to_gal { clac "$1 x 0.264172"; }
+
+function gal_to_l { clac "$1 x 3.78541"; }
+
+function ml_to_tbsp { clac "$1 x 0.067628"; }
+
+function tbsp_to_ml { clac "$1 x 14.7868"; }
+
+function ml_to_tsp { clac "$1 x 0.202884"; }
+
+function tsp_to_ml { clac "$1 x 4.92892"; }
+
+function tbsp_to_tsp { clac "$1 x 3"; }
+
+function tsp_to_tbsp { clac "$1 x 0.333333"; }
+
+function get_func_unit {
+    func_unit="$1"
+    if [[ "$func_unit" == '°' ]]; then
+        func_unit='deg'
+    elif [[ "$func_unit" == '°C' || "$func_unit" == '°F' ]]; then
+        func_unit="${func_unit//'°'/''}"
+    elif [[ "$func_unit" == 'π' ]]; then
+        func_unit='pi'
+    fi
+    echo $func_unit
+}
+
+function get_func {
+    unit1=`get_func_unit $baseunit`
+    unit2=`get_func_unit $targetunit`
+    echo "`to lowercase $unit1'_to_'$unit2`"
+}
+
+func=`get_func`
+type $func > /dev/null 2>&1 && \
+    echo "`$func $basevalue`$targetunit" || \
+    echo "idk how to convert $baseunit to $targetunit :-("
