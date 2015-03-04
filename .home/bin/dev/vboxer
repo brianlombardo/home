@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -e
+
+if [[ "$1" == '-h' ]]; then _flags='--type headless'; shift; fi
+VBoxManage startvm "$1" $_flags; shift

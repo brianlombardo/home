@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -e
+
+amount="`value ${1:-2s}`"
+unit="`value unit ${1:-2s}`"
+
+  if [[ "$unit" == 'ms' ]]; then mult='0.001'
+elif [[ "$unit" == 's' ]]; then mult='1'
+elif [[ "$unit" == 'm' ]]; then mult='60'
+elif [[ "$unit" == 'h' ]]; then mult='3600'
+  fi
+sleep `clac $amount x ${mult:-1}`
